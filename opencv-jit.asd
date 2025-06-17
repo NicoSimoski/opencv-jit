@@ -15,5 +15,6 @@
                              (:file "highgui")
                              (:file "opencv-jit")
                              (:file "dnn")
-                             (:file "face-detector-yn"))))
+                             (:file "face-detector-yn")
+                             (:file "videoio"))))
   :in-order-to ((test-op (test-op :opencv-jit-test))))

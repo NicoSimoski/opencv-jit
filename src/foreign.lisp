@@ -24,7 +24,11 @@
       (cxx-jit:*cxx-type-name-to-cffi-type-symbol-alist* (append cxx-jit:*cxx-type-name-to-cffi-type-symbol-alist*
                                                                  (list (cons "size_t" :size)
                                                                        (cons "ssize_t" :ssize)))))
-  (from '("<opencv2/opencv.hpp>" "<opencv2/core/mat.hpp>" "<opencv2/dnn/dnn.hpp>")
+  (from '("<opencv2/opencv.hpp>"
+          "<opencv2/core/mat.hpp>"
+          "<opencv2/dnn/dnn.hpp>"
+          "<opencv2/highgui.hpp>"
+          "<opencv2/videoio.hpp>")
         ;; Cv
         '(;; ======== ImgProc
           :%cvt-color "[](cv::Mat *src, cv::Mat *dst, int code){return cv::cvtColor(*src, *dst, code);}"
@@ -192,14 +196,14 @@
           :%dnn-read-net-from-onnx "[](const char* onnxfile){return new cv::dnn::Net(cv::dnn::readNetFromONNX(onnxfile));}"
           :%dnn-read-net-from-tensorflow "[](const char* model, const char* config){return new cv::dnn::Net(cv::dnn::readNetFromTensorflow(model, config));}"
           :%dnn-read-net-from-model-optimizer "[](const char* xml, const char* bin){return new cv::dnn::Net(cv::dnn::readNetFromModelOptimizer(xml, bin));}"
-          :%dnn-read-net-from-tflite "[](const char* model){return new cv::dnn::Net(cv::dnn::readNetFromTFLite(model));}"
+          ;;:%dnn-read-net-from-tflite "[](const char* model){return new cv::dnn::Net(cv::dnn::readNetFromTFLite(model));}" ;; error: ‘readNetFromTFLite’ is not a member of ‘cv::dnn’ 
           :%dnn-read-net-from-torch "[](const char* model, bool binary, bool evaluate){return new cv::dnn::Net(cv::dnn::readNetFromTorch(model, binary, evaluate));}"
           :%dnn-blob-from-image "[](cv::Mat *image, double scale_factor, cv::Size *sz, cv::Scalar *mean, bool swap_rb, bool crop){cv::Mat *output = new cv::Mat(); cv::dnn::blobFromImage(*image, *output, scale_factor, *sz, *mean, swap_rb, crop); return output;}"
           ;; methods
           :%dnn-net-dump "[](cv::dnn::Net *net){return net->dump();}"
           :%dnn-net-empty "[](cv::dnn::Net *net){return net->empty();}"
-          :%dnn-net-enable-fusion "[](cv::dnn::Net *net, bool fusion){net->enableWinograd(fusion);}"
-          :%dnn-net-enable-winograd "[](cv::dnn::Net *net, bool use_winograd){net->enableWinograd(use_winograd);}"
+          ;; :%dnn-net-enable-fusion "[](cv::dnn::Net *net, bool fusion){net->enableWinograd(fusion);}" ;; error: ‘class cv::dnn::dnn4_v20220524::Net’ has no member named ‘enableWinograd’
+          ;; :%dnn-net-enable-winograd "[](cv::dnn::Net *net, bool use_winograd){net->enableWinograd(use_winograd);}" ;; error: ‘class cv::dnn::dnn4_v20220524::Net’ has no member named ‘enableWinograd’
           :%dnn-net-delete "[](cv::dnn::Net *net){delete net;}"
           :%dnn-net-forward "[](cv::dnn::Net *net, const char* name){return new cv::Mat(net->forward(name));}"
           :%dnn-net-set-input "[](cv::dnn::Net *net, cv::Mat *blob, const char* name, double scale, cv::Scalar *mean){net->setInput(*blob, name, scale, *mean);}"
@@ -214,4 +218,12 @@
           :%face-detector-yn-set-input-size "[](cv::FaceDetectorYN *fyn, cv::Size *input_size){fyn->setInputSize(*input_size);}"
           :%face-detector-yn-set-nms-threshold "[](cv::FaceDetectorYN *fyn, float nms_threshold){fyn->setNMSThreshold(nms_threshold);}"
           :%face-detector-yn-set-score-threshold "[](cv::FaceDetectorYN *fyn, float score_threshold){fyn->setScoreThreshold(score_threshold);}"
-          :%face-detector-yn-delete "[](cv::FaceDetectorYN *fyn){delete fyn;}")))
+          :%face-detector-yn-delete "[](cv::FaceDetectorYN *fyn){delete fyn;}"
+          ;; ======== VideoIO
+          :%new-camera-video-capture "[](int index){return new cv::VideoCapture(index);}"
+          :%delete-camera-video-capture "[](cv::VideoCapture *capture){delete capture;}"
+          :%open-camera-video-capture "[](cv::VideoCapture *capture, int index){return capture->open(index);}"
+          :%video-capture-is-opened? "[](cv::VideoCapture *capture){return capture->isOpened();}"
+          :%read-video-capture-image "[](cv::VideoCapture *capture, cv::Mat *image){return capture->read(*image);}"
+          :%grab-video-capture-image "[](cv::VideoCapture *capture){return capture->grab();}"
+          :%retrieve-video-capture-image "[](cv::VideoCapture *capture, cv::Mat *image){return capture->retrieve(*image);}")))
