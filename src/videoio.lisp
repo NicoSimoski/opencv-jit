@@ -27,16 +27,20 @@
   (%video-capture-is-opened? capture))
 
 @export
-(defun read-video-capture-image (capture image)
-  (%read-video-capture-image capture (cvo-ptr image)))
+(defun read-video-capture-image (capture)
+  (let ((an-image (make-mat)))
+    (%read-video-capture-image capture (cvo-ptr an-image))
+    an-image))
 
 @export
 (defun grab-video-capture-image (capture)
   (%grab-video-capture-image capture))
 
 @export
-(defun retrieve-video-capture-image (capture image)
-  (%retrieve-video-capture-image capture (cvo-ptr image)))
+(defun retrieve-video-capture-image (capture)
+  (let ((an-image (make-mat)))
+    (%retrieve-video-capture-image capture (cvo-ptr an-image))
+    an-image))
 
 @export
 (defmacro with-camera-video-capture ((a-capture index) &body body)
