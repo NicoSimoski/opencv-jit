@@ -37,3 +37,9 @@
 @export
 (defun retrieve-video-capture-image (capture image)
   (%retrieve-video-capture-image capture (cvo-ptr image)))
+
+@export
+(defmacro with-camera-video-capture ((a-capture index) &body body)
+  `(let ((,a-capture (new-camera-video-capture ,index)))
+     (unwind-protect (progn ,@body)
+       (delete-camera-video-capture ,a-capture))))
